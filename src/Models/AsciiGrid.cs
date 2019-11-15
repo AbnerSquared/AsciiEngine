@@ -21,12 +21,12 @@ namespace Orikivo.Ascii
         /// <summary>
         /// The width of the <see cref="AsciiGrid"/> (in characters).
         /// </summary>
-        int Width { get; }
+        public int Width { get; }
 
         /// <summary>
         /// The height of the <see cref="AsciiGrid"/> (in characters).
         /// </summary>
-        int Height { get; }
+        public int Height { get; }
 
         /// <summary>
         /// The character that will be used when there is no <see cref="AsciiObject"/> at the specified location.
@@ -69,9 +69,14 @@ namespace Orikivo.Ascii
 
             foreach(AsciiObject obj in Objects)
             {
-                Point pos = Utils.GetPos(obj, Width, Height, obj.Collider.GridCollider, Padding.Empty, time);
-                Console.WriteLine($"ToDraw.Position: X: {pos.X} Y: {pos.Y}");
-                grid.DrawObject(obj, pos);
+                //Point pos = Utils.GetPos(obj, Width, Height, obj.Collider.GridCollider, Padding.Empty, time);
+                //Console.WriteLine($"ToDraw.Position: X: {pos.X} Y: {pos.Y}");
+                //grid.DrawObject(obj, pos);
+
+                foreach (CharValue value in Utils.GetPoints(obj, this, time))
+                {
+                    grid.DrawChar(value);
+                }
             }
             // Create a char[][] with a height
             // x + width = final x

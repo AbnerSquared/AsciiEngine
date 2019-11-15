@@ -108,7 +108,6 @@ namespace Orikivo.Ascii
             return initialVelocity + (acceleration * time);
         }
 
-
 		// s = s0 + vt
 		// gets the new position with a specified initial position, initial velocity, and time.
         /// <summary>
@@ -151,7 +150,8 @@ namespace Orikivo.Ascii
         /// <summary>
         /// Gets the true position for a grid based off of its raw position, grid length, grid collision method, and grid padding.
         /// </summary>
-		public static Point GetPos(AsciiObject obj, int gridWidth, int gridHeight, GridCollideMethod collision, Padding gridPadding, float time)
+		public static Point GetPos(AsciiObject obj, int gridWidth, int gridHeight,
+            GridCollideMethod collision, Padding gridPadding, float time)
         {
             float vX = GetVelocity(obj.Vector.VX, obj.Vector.AX, time); // gets their actual velocities
             float vY = GetVelocity(obj.Vector.VY, obj.Vector.AY, time); // gets their actual velocities
@@ -181,6 +181,41 @@ namespace Orikivo.Ascii
 
             return new Point(x, y); // TODO: make safe.
         }
+
+        public static List<CharValue> GetPoints(AsciiObject obj, AsciiGrid grid, float time)
+        {
+            float vX = GetVelocity(obj.Vector.VX, obj.Vector.AX, time);
+            float vY = GetVelocity(obj.Vector.VY, obj.Vector.AY, time);
+
+            int pX = (int)Math.Floor(GetRawDist(obj.X, vX, time));
+            int pY = (int)Math.Floor(GetRawDist(obj.Y, vY, time));
+
+            List<CharValue> values = new List<CharValue>();
+            // for now, just work as if it was scrolling.
+            for (int y = pY; y < pY + obj.Height; y++)
+            {
+                int overlapY = (int)Math.Floor((double)(y / grid.Height));
+                int cY = y - (overlapY * grid.Height);
+
+                for (int x = pX; x < pX + obj.Width; x++)
+                {
+                    int overlapX = (int)Math.Floor((double)(x / grid.Width));
+                    int cX = x - (overlapX * grid.Width);
+
+                    Console.WriteLine($"({cX}, {cY})");
+                    values.Add(new CharValue(obj.Chars[y - pY][x - pX], cX, cY));
+                }
+            }
+
+            return values;
+        }
+
+
+        // Ignore, Reflect, Scroll, Stop
+        // Ignore = do nothing, leave points as is ( x = Math.Floor(GetRawDist()) // check in rendering
+        // Reflect = make impact velocity negative ( ((GetRawDist() + obj.Width) - Math.Floor((GetRawDist() + obj.Width) / grid.Width))
+        // Scroll = leave velocity as is, set characters outside of the grid bounds to the start of the bounds it hit
+        // Stop = halt all velocity in the direction it collided in. GetRawDist() + obj.Width > grid.Width : x = grid.Width - obj.Width - 1
 
         public static float GetAngledVectorX(float x, float angle)
             => (float)(x * Math.Cos(angle % 360));

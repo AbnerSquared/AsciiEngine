@@ -17,7 +17,7 @@ namespace Orikivo.Ascii
 		/// <summary>
         /// An optional character to set that draws the border of an <see cref="AsciiGrid"/>.
         /// </summary>
-        public Nullable<char> BorderChar { get; }
+        public char? BorderChar { get; }
 
 		/// <summary>
         /// A collection of <see cref="AsciiGrid"/> values that the <see cref="AsciiCamera"/> can focus on.
@@ -31,10 +31,7 @@ namespace Orikivo.Ascii
         /// </summary>
         public int CurrentGridIndex
         {
-            get
-            {
-                return _currentGridIndex;
-            }
+            get => _currentGridIndex;
 
             set
             {
@@ -55,7 +52,12 @@ namespace Orikivo.Ascii
         /// The camera for the <see cref="AsciiEngine"/> that displays everything within a focused <see cref="AsciiGrid"/>.
         /// </summary>
 		public AsciiCamera Camera { get; private set; }
-        // ONLY if grid is larger than camera, will the camera read trigger bounds.
+        // TODO: Create camera trigger bound detection
+
+        /// <summary>
+        /// The refresh rate for the <see cref="AsciiCamera"/> at which the frames will be viewed at.
+        /// </summary>
+        public int Fps { get; set; }
 
         /// <summary>
         /// Creates a default <see cref="AsciiEngine"/> with a viewport width and height of 32 characters.
@@ -121,13 +123,13 @@ namespace Orikivo.Ascii
         /// <summary>
         /// Renders all of the frames for a specified duration and incremental step (with its default being 1).
         /// </summary>
-        public string[] GetFrames(int time, float step = 1)
+        public string[] GetFrames(int time, float step = 1) // TODO: Calculate FPS
             => GetFrames(0, time, step);
 
         /// <summary>
         /// Gets the frame at the specified time.
         /// </summary>
-        public string GetFrame(float time) // get the positions of all of the objects within the current grid.
+        public string GetFrame(float time)
         {
             return CurrentGrid.ToString(time);
         }
@@ -135,10 +137,12 @@ namespace Orikivo.Ascii
 		public void AddObject(AsciiObject asciiObj)
         {
             CurrentGrid.Objects.Add(asciiObj);
-            // TODO: Handle collision-mision.
-			// attempt to place object into the grid. if there is a collider present
+            // TODO: Handle collision when attempting to stack objects on top of each other.
         }
 
-        public void Dispose() { /* TODO: Add disposal methods. */}
+        public void Dispose()
+        {
+            // TODO: Add disposal methods.
+        }
     }
 }
