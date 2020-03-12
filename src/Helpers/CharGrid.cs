@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Linq;
 
-namespace Orikivo.Ascii
+namespace Orikivo.Text
 {
     /// <summary>
     /// A raw character grid used to store character values at specified positions.

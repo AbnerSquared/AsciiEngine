@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orikivo.Ascii
+namespace Orikivo.Text
 {
     /// <summary>
     /// A rendering engine derived from ASCII characters.

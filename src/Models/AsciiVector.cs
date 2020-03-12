@@ -1,4 +1,7 @@
-﻿namespace Orikivo.Ascii
+﻿using System;
+using System.Threading.Tasks;
+
+namespace Orikivo.Text
 {
     /// <summary>
     /// The vector used for an <see cref="AsciiObject"/> that contains its initial velocity and acceleration values.
@@ -41,6 +44,8 @@
         /// The initial velocity for the X vector.
         /// </summary>
         public float VX { get; }
+
+        public VectorDouble X { get; }
         
         /// <summary>
         /// The initial acceleration for the X vector.
@@ -51,10 +56,61 @@
         /// The initial velocity for the Y vector.
         /// </summary>
         public float VY { get; }
+
+        public VectorDouble Y { get; }
         
         /// <summary>
         /// The initial acceleration for the Y vector.
         /// </summary>
         public float AY { get; }
+
+
+        /// <summary>
+        /// Sets a constant value for the vector of X.
+        /// </summary>
+        /// <param name="x"></param>
+        public void SetVectorX(float x) // set a constant value
+            => SetVectorX(vX => x);
+
+        /// <summary>
+        /// Set a <see cref="Func{float, float}"/> that returns the value for X with its input value being time.
+        /// </summary>
+        public void SetVectorX(Func<float, float> functionX)
+        {
+
+        }
+
+        /// <summary>
+        /// Sets a constant value for the vector of Y.
+        /// </summary>
+        /// <param name="y"></param>
+        public void SetVectorY(float y)
+            => SetVectorY(vY => y);
+
+        public float GetVectorX(float time)
+        {
+            return 0f; // gets the vector value for x with respect to time.
+        }
+
+        public float GetVectorY(float time)
+        {
+            return 0f; // gets the vector value for x with respect to time.
+        }
+
+        /// <summary>
+        /// Set a <see cref="Func{float, float}"/> that returns the value for Y with its input value being time.
+        /// </summary>
+        public void SetVectorY(Func<float, float> functionY)
+        {
+
+        }
+    }
+
+    public class VectorDouble
+    {
+        /// <summary>
+        /// The function that is used to determine the value of the <see cref="VectorDouble"/>.
+        /// </summary>
+        public Func<float, float> Function { get; set; }
     }
 }

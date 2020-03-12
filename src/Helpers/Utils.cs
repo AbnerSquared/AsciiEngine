@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Padding = Orikivo.Drawing.Padding;
 
-namespace Orikivo.Ascii
+namespace Orikivo.Text
 {
     internal static class Utils
     {
@@ -58,7 +58,7 @@ namespace Orikivo.Ascii
         /// <summary>
         /// Gets the width of an <see cref="AsciiObject"/> specified by its <see cref="AsciiObject.Chars"/>.
         /// </summary>
-		public static int GetObjectWidth(char[][] obj)
+		public static int GetObjectWidth(char[][] obj) // char[,]
         {
             int length = 0;
 			// char[0][0] = a
@@ -190,8 +190,39 @@ namespace Orikivo.Ascii
             int pX = (int)Math.Floor(GetRawDist(obj.X, vX, time));
             int pY = (int)Math.Floor(GetRawDist(obj.Y, vY, time));
 
+            switch(obj.Collider.GridCollider)
+            {
+                case GridCollideMethod.Ignore:
+                    return GetIgnorePoints(pX, pY, obj, grid);
+
+                case GridCollideMethod.Reflect:
+                    if (time % 1 != 0)
+                        throw new Exception("In order to simulate reflection, time must be a whole number.");
+                    return GetReflectPoints(pX, pY, obj, grid); // simulated... try to find a work around be getting a function to get the point regardless
+
+                case GridCollideMethod.Scroll:
+                    return GetScrollPoints(pX, pY, obj, grid);
+
+                case GridCollideMethod.Stop:
+                    return GetStopPoints(pX, pY, obj, grid);
+
+                default:
+                    return GetIgnorePoints(pX, pY, obj, grid);
+            }
+        }
+
+        public static List<CharValue> GetScrollPoints(int pX, int pY, AsciiObject obj, AsciiGrid grid)
+        {
+            //float vX = GetVelocity(obj.Vector.VX, obj.Vector.AX, time);
+            //float vY = GetVelocity(obj.Vector.VY, obj.Vector.AY, time);
+
+            //int pX = (int)Math.Floor(GetRawDist(obj.X, vX, time));
+            //int pY = (int)Math.Floor(GetRawDist(obj.Y, vY, time));
+
             List<CharValue> values = new List<CharValue>();
             // for now, just work as if it was scrolling.
+
+            // SCROLLING
             for (int y = pY; y < pY + obj.Height; y++)
             {
                 int overlapY = (int)Math.Floor((double)(y / grid.Height));
@@ -210,6 +241,103 @@ namespace Orikivo.Ascii
             return values;
         }
 
+        public static List<CharValue> GetIgnorePoints(int pX, int pY, AsciiObject obj, AsciiGrid grid)
+        {
+            List<CharValue> values = new List<CharValue>();
+
+            for (int y = pY; y < pY + obj.Height; y++)
+            {
+                if (y >= grid.Height)
+                    continue;
+
+                for (int x = pX; x < pX + obj.Width; x++)
+                {
+                    if (x >= grid.Width)
+                        continue;
+
+                    values.Add(new CharValue(obj.Chars[y - pY][x - pX], x, y));
+                }
+            }
+
+            return values;
+        }
+
+        public static List<CharValue> GetStopPoints(int pX, int pY, AsciiObject obj, AsciiGrid grid)
+        {
+            List<CharValue> values = new List<CharValue>();
+
+            for (int y = pY; y < pY + obj.Height; y++)
+            {
+                int sY = y;
+                if (y + (obj.Height - 1) >= grid.Height)
+                    sY = grid.Height - ((y - pY) + 1);
+
+                for (int x = pX; x < pX + obj.Width; x++)
+                {
+                    int sX = x;
+                    if (x + (obj.Width - 1) >= grid.Width)
+                        sX = grid.Width - ((x - pX) + 1);
+
+                    values.Add(new CharValue(obj.Chars[y - pY][x - pX], sX, sY));
+                }
+            }
+
+            return values;
+        }
+
+        // only known way to get reflect points....?
+        public static List<CharValue> GetReflectPoints(int pX, int pY, AsciiObject obj, AsciiGrid grid)
+        {
+            List<CharValue> values = new List<CharValue>();
+
+            for (int y = pY; y < pY + obj.Height; y++)
+            {
+                //int height = (grid.Height - 1) - (y - pY);
+                //int overlapY = (int)Math.Abs(Math.Floor((double)(pY / height)));
+                //int dirY = (int)(Math.Pow(-1, overlapY) * Math.Sign(obj.Vector.VY));
+                //int cY = y - (overlapY * height);
+                //int aY = dirY >= 0 ? cY : height - cY;
+                int aY = GetReflectValue(pY, obj.Vector.VY, obj.Height, y - pY, grid.Height);
+
+                if (aY >= grid.Height || aY < 0)
+                    continue;
+
+                for (int x = pX; x < pX + obj.Width; x++)
+                {
+                    //int width = (grid.Width - 1) - (x - pX);
+                    //int overlapX = (int)Math.Abs(Math.Floor((double)(pX / width)));
+                    //int dirX = (int)(Math.Pow(-1, overlapX) * Math.Sign(obj.Vector.VX));
+                    //int cX = x - (overlapX * width);
+                    //int aX = dirX >= 0 ? cX : width - cX;
+                    int aX = GetReflectValue(pX, obj.Vector.VX, obj.Width, x - pX, grid.Width);
+
+                    if (aX >= grid.Width || aX < 0)
+                        continue;
+
+                    Console.WriteLine($"REF ({aX}, {aY})");
+
+                    values.Add(new CharValue(obj.Chars[y - pY][x - pX], aX, aY));
+                }
+            }
+
+            return values;
+        }
+
+        private static int GetReflectValue(int p, float velocity, int objLength, int objIndex, int gridLength)
+        {
+            int l = p + objIndex;
+            int length = (gridLength - 1) - ((objLength - 1) - objIndex); // (8 - 1) - ((3 - 1) - 0) = 7 - 2 = 5
+            int overlap = (int)Math.Abs(Math.Floor((double)(p / length)));
+            int dir = (int)Math.Pow(-1, overlap) * Math.Sign(velocity);
+            int c = l - (overlap * length);
+            int x = dir >= 0 ? c : length - c;
+            Console.WriteLine($"[0 => {x} => {length}]");
+            return x;
+        }
+
+        // DrySimulate(int fromTime, int toTime) // simulates for a range of time.
+
+        // SimulateAsync() // simulates until the task is cancelled or closed.
 
         // Ignore, Reflect, Scroll, Stop
         // Ignore = do nothing, leave points as is ( x = Math.Floor(GetRawDist()) // check in rendering

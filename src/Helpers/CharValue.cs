@@ -1,4 +1,4 @@
-﻿namespace Orikivo.Ascii
+﻿namespace Orikivo.Text
 {
     /// <summary>
     /// A raw character with a defined X and Y coordinate value.

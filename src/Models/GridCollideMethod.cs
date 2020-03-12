@@ -1,4 +1,4 @@
-﻿namespace Orikivo.Ascii
+﻿namespace Orikivo.Text
 {
     /// <summary>
     /// A ruleset to determine how collision is handled when an <see cref="AsciiCollider"/> collides with the boundaries set by an <see cref="AsciiGrid"/>.

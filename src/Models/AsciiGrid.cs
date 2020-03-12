@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Padding = Orikivo.Drawing.Padding;
 
-namespace Orikivo.Ascii
+namespace Orikivo.Text
 {
     /// <summary>
     /// The main scene at which <see cref="AsciiObject"/> entities interact in.

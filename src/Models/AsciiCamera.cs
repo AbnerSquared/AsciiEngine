@@ -1,4 +1,4 @@
-﻿namespace Orikivo.Ascii
+﻿namespace Orikivo.Text
 {
     // TODO: Make camera the actual viewport used when rendering.
     /// <summary>

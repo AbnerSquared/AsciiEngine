@@ -1,4 +1,4 @@
-﻿namespace Orikivo.Ascii
+﻿namespace Orikivo.Text
 {
     /// <summary>
     /// A collider used to determine collision for an <see cref="AsciiObject"/>.

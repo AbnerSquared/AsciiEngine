@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Orikivo.Ascii
+namespace Orikivo.Text
 {
     internal class EngineExample
     {

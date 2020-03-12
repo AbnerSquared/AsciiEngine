@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orikivo.Ascii
+namespace Orikivo.Text
 {
     /// <summary>
     /// An object with applicable physics to be placed inside an <see cref="AsciiGrid"/>.
@@ -47,7 +47,7 @@ namespace Orikivo.Ascii
 		/// <summary>
         /// A two-dimensional <see cref="Array"/> containing all of the characters to draw onto an <see cref="AsciiGrid"/>.
         /// </summary>
-		public char[][] Chars { get; }
+		public char[][] Chars { get; } // Grid<char>
 
         /// <summary>
         /// The number of characters that are specified within each row in <see cref="Chars"/>.
